@@ -62,6 +62,20 @@ Invoke a skill explicitly with `$skill-name`:
 Use $mac-diagnostics to check this Mac's storage, CPU, memory, and network health.
 ```
 
+Japanese prompt samples:
+
+```text
+$mac-diagnostics を使って、このMacのストレージ、CPU、メモリ、ネットワーク状態を診断して。
+```
+
+```text
+$mac-diagnostics でネットワーク診断して。DNS、ルーティング、HTTP到達性を確認して。
+```
+
+```text
+$mac-diagnostics で localhost:3000 が開かない原因を調べて。
+```
+
 You can also ask naturally when the skill description matches the task:
 
 ```text
