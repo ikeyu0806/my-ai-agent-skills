@@ -1,0 +1,7 @@
+interface:
+  display_name: "Mac Diagnostics"
+  short_description: "Diagnose Mac health and network issues"
+  default_prompt: "Use $mac-diagnostics to check this Mac's storage, CPU, memory, and network health."
+
+policy:
+  allow_implicit_invocation: true
