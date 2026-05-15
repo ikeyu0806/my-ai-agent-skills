@@ -14,7 +14,7 @@ Use this skill to inspect Mac resource pressure and network issues with repeatab
 - Do not delete files, clear caches, kill processes, change DNS, renew DHCP, toggle Wi-Fi, reboot, or run `sudo` unless the user explicitly asks and approves the specific action.
 - Start with narrow, read-only checks. Treat cleanup, process termination, and network reconfiguration as follow-up recommendations.
 - Avoid broad full-home scans unless the user asks for storage forensics or accepts that it may be slow and reveal filenames.
-- If network probes fail because the Codex sandbox blocks outbound access, explain that limitation and request escalation only when the probe is necessary.
+- If network probes fail because the current AI agent sandbox blocks outbound access, explain that limitation and request escalation only when the probe is necessary.
 - Summarize sensitive local details instead of pasting unnecessary paths, hostnames, or process arguments.
 
 ## Diagnostic Workflow

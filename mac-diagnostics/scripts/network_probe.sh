@@ -168,5 +168,5 @@ cat <<'NOTES'
 - This script does not change network settings.
 - DNS success plus HTTP failure suggests proxy, TLS, firewall, VPN, captive portal, or service-side issues.
 - Ping or traceroute loss can be blocked by networks; confirm with HTTP and DNS before concluding packet loss.
-- If outbound probes fail in Codex but work in a browser, the sandbox may be the cause.
+- If outbound probes fail in the AI agent but work in a browser, the sandbox may be the cause.
 NOTES
