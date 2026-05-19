@@ -1,0 +1,7 @@
+interface:
+  display_name: "Docker Cleanup"
+  short_description: "Plan and run safe Docker cleanup"
+  default_prompt: "Use $docker-cleanup to inspect Docker disk usage and plan safe cleanup of unused containers, images, volumes, networks, and build cache."
+
+policy:
+  allow_implicit_invocation: true

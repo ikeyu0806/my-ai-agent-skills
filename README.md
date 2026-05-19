@@ -121,6 +121,10 @@ mac-diagnostics skill でGoogle Meetの音声が途切れる原因をWi-Fi、DFS
 mac-diagnostics skill で localhost:3000 が開かない原因を調べて。
 ```
 
+```text
+$docker-cleanup を使って、Dockerの不要なcontainer/image/volume/network/build cacheを掃除する前に候補を確認して。
+```
+
 You can also ask naturally when the skill description matches the task:
 
 ```text
@@ -128,8 +132,10 @@ Macのストレージ、CPU、メモリの状態を診断して。
 ネットが遅い原因をDNS、ルーティング、HTTP到達性から切り分けて。
 Google Meetの音声が途切れる原因をWi-FiとDNS/VPNの観点で見て。
 localhost:3000 が開かない原因を見て。
+Dockerの容量が増えてきたので、安全に掃除できるcontainer、image、volume、network、build cacheを確認して。
 ```
 
 ## Available Skills
 
 - `mac-diagnostics`: Diagnose Mac storage, CPU, memory, battery, thermal hints, listening ports, DNS, routing, Wi-Fi band/channel/DFS clues, connectivity, slow internet, Meet/Zoom dropouts, and localhost issues with read-only snapshots.
+- `docker-cleanup`: Inspect Docker disk usage and safely plan or run cleanup for unused containers, images, volumes, networks, system prune, builder/buildx cache, and Docker Compose resources.
