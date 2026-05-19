@@ -114,6 +114,10 @@ mac-diagnostics skill でネットワーク診断して。DNS、ルーティン�
 ```
 
 ```text
+mac-diagnostics skill でGoogle Meetの音声が途切れる原因をWi-Fi、DFS、VPN/DNSプロキシの観点で診断して。
+```
+
+```text
 mac-diagnostics skill で localhost:3000 が開かない原因を調べて。
 ```
 
@@ -122,9 +126,10 @@ You can also ask naturally when the skill description matches the task:
 ```text
 Macのストレージ、CPU、メモリの状態を診断して。
 ネットが遅い原因をDNS、ルーティング、HTTP到達性から切り分けて。
+Google Meetの音声が途切れる原因をWi-FiとDNS/VPNの観点で見て。
 localhost:3000 が開かない原因を見て。
 ```
 
 ## Available Skills
 
-- `mac-diagnostics`: Diagnose Mac storage, CPU, memory, battery, thermal hints, listening ports, DNS, routing, connectivity, slow internet, and localhost issues with read-only snapshots.
+- `mac-diagnostics`: Diagnose Mac storage, CPU, memory, battery, thermal hints, listening ports, DNS, routing, Wi-Fi band/channel/DFS clues, connectivity, slow internet, Meet/Zoom dropouts, and localhost issues with read-only snapshots.
