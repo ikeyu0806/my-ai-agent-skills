@@ -125,6 +125,10 @@ mac-diagnostics skill で localhost:3000 が開かない原因を調べて。
 $docker-cleanup を使って、Dockerの不要なcontainer/image/volume/network/build cacheを掃除する前に候補を確認して。
 ```
 
+```text
+$gcp-hosting-debug を使って、Cloud Run、Load Balancer、Cloud Logging、Cloud SQL PostgreSQL の状態からGCP上のWebサービス障害を切り分けて。
+```
+
 You can also ask naturally when the skill description matches the task:
 
 ```text
@@ -133,9 +137,11 @@ Macのストレージ、CPU、メモリの状態を診断して。
 Google Meetの音声が途切れる原因をWi-FiとDNS/VPNの観点で見て。
 localhost:3000 が開かない原因を見て。
 Dockerの容量が増えてきたので、安全に掃除できるcontainer、image、volume、network、build cacheを確認して。
+GCP上のCloud Runサービスで500が増えているので、ログとリビジョン、Load Balancer、Cloud SQLの観点で調査して。
 ```
 
 ## Available Skills
 
 - `mac-diagnostics`: Diagnose Mac storage, CPU, memory, battery, thermal hints, listening ports, DNS, routing, Wi-Fi band/channel/DFS clues, connectivity, slow internet, Meet/Zoom dropouts, and localhost issues with read-only snapshots.
 - `docker-cleanup`: Inspect Docker disk usage and safely plan or run cleanup for unused containers, images, volumes, networks, system prune, builder/buildx cache, and Docker Compose resources.
+- `gcp-hosting-debug`: Debug GCP-hosted web services with read-only Cloud Run, HTTP(S) Load Balancer, Cloud Logging, Cloud SQL PostgreSQL, OAuth/OIDC/Auth0, TLS, and custom domain diagnostics.

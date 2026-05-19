@@ -1,0 +1,7 @@
+interface:
+  display_name: "GCP Hosting Debug"
+  short_description: "Debug Cloud Run, LB, logs, and SQL"
+  default_prompt: "Use $gcp-hosting-debug to inspect a GCP-hosted service with Cloud Run, Load Balancer, logs, and Cloud SQL PostgreSQL signals."
+
+policy:
+  allow_implicit_invocation: true
