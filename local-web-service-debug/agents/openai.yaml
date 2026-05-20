@@ -1,0 +1,7 @@
+interface:
+  display_name: "Local Web Service Debug"
+  short_description: "Debug Compose apps, browser errors, and DB state"
+  default_prompt: "Use $local-web-service-debug to inspect a local Docker Compose web service with logs, Playwright browser signals, HTTP checks, and read-only database diagnostics."
+
+policy:
+  allow_implicit_invocation: true
