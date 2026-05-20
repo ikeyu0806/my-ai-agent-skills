@@ -133,6 +133,10 @@ $gcp-hosting-debug を使って、Cloud Run、Load Balancer、Cloud Logging、Cl
 $local-web-service-debug を使って、Docker Compose のログ、ブラウザのコンソール/API失敗、PostgreSQL の状態からローカルWebサービスの不具合を切り分けて。
 ```
 
+```text
+$gh-pr-review-ci を使って、現在のブランチのPRレビューコメントとGitHub Actionsの失敗を確認し、必要な修正をpushしてPRに返信して。
+```
+
 You can also ask naturally when the skill description matches the task:
 
 ```text
@@ -143,6 +147,7 @@ localhost:3000 が開かない原因を見て。
 Dockerの容量が増えてきたので、安全に掃除できるcontainer、image、volume、network、build cacheを確認して。
 GCP上のCloud Runサービスで500が増えているので、ログとリビジョン、Load Balancer、Cloud SQLの観点で調査して。
 Docker Composeで動くローカルWebサービスの500エラーを、appログ、ブラウザログ、PostgreSQLの状態から調べて。
+GitHub PRのレビュー指摘と赤いCIを確認して、直せるものは修正してpushし、レビューコメントに返信して。
 ```
 
 ## Available Skills
@@ -151,3 +156,4 @@ Docker Composeで動くローカルWebサービスの500エラーを、appログ
 - `docker-cleanup`: Inspect Docker disk usage and safely plan or run cleanup for unused containers, images, volumes, networks, system prune, builder/buildx cache, and Docker Compose resources.
 - `gcp-hosting-debug`: Debug GCP-hosted web services with read-only Cloud Run, HTTP(S) Load Balancer, Cloud Logging, Cloud SQL PostgreSQL, OAuth/OIDC/Auth0, TLS, and custom domain diagnostics.
 - `local-web-service-debug`: Debug local Docker Compose web services with read-only Compose logs, browser/Playwright console and network signals, HTTP probes, and bounded PostgreSQL/MySQL diagnostics.
+- `gh-pr-review-ci`: Handle GitHub PR review feedback and failing GitHub Actions checks with `gh`: inspect comments and CI logs, fix actionable issues, validate locally, push, and reply on the PR.

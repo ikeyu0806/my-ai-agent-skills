@@ -1,0 +1,7 @@
+interface:
+  display_name: "GH PR Review CI"
+  short_description: "Handle PR review comments and CI failures"
+  default_prompt: "Use $gh-pr-review-ci to address GitHub PR review comments, fix failing CI checks, push the branch, and reply with the results."
+
+policy:
+  allow_implicit_invocation: true
