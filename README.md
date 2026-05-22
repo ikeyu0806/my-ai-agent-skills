@@ -137,6 +137,10 @@ $local-web-service-debug を使って、Docker Compose のログ、ブラウザ�
 $gh-pr-review-ci を使って、現在のブランチのPRレビューコメントとGitHub Actionsの失敗を確認し、必要な修正をpushしてPRに返信して。
 ```
 
+```text
+$gh-ci-fix を使って、現在のPRのGitHub Actions失敗ログを gh で確認し、原因を修正してローカル検証後に結果を報告して。
+```
+
 You can also ask naturally when the skill description matches the task:
 
 ```text
@@ -148,6 +152,7 @@ Dockerの容量が増えてきたので、安全に掃除できるcontainer、im
 GCP上のCloud Runサービスで500が増えているので、ログとリビジョン、Load Balancer、Cloud SQLの観点で調査して。
 Docker Composeで動くローカルWebサービスの500エラーを、appログ、ブラウザログ、PostgreSQLの状態から調べて。
 GitHub PRのレビュー指摘と赤いCIを確認して、直せるものは修正してpushし、レビューコメントに返信して。
+GitHub Actions の失敗内容を gh で調べて、直せるCI failureは修正して。
 ```
 
 ## Available Skills
@@ -157,3 +162,4 @@ GitHub PRのレビュー指摘と赤いCIを確認して、直せるものは修
 - `gcp-hosting-debug`: Debug GCP-hosted web services with read-only Cloud Run, HTTP(S) Load Balancer, Cloud Logging, Cloud SQL PostgreSQL, OAuth/OIDC/Auth0, TLS, and custom domain diagnostics.
 - `local-web-service-debug`: Debug local Docker Compose web services with read-only Compose logs, browser/Playwright console and network signals, HTTP probes, and bounded PostgreSQL/MySQL diagnostics.
 - `gh-pr-review-ci`: Handle GitHub PR review feedback and failing GitHub Actions checks with `gh`: inspect comments and CI logs, fix actionable issues, validate locally, push, and reply on the PR.
+- `gh-ci-fix`: Diagnose and fix failing GitHub Actions checks with `gh`: inspect PR checks and run logs, identify the root cause, apply scoped code or workflow fixes, validate locally, push when requested, and report updated CI status.

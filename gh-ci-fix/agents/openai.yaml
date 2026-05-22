@@ -1,0 +1,7 @@
+interface:
+  display_name: "GH CI Fix"
+  short_description: "Diagnose and fix failed GitHub CI"
+  default_prompt: "Use $gh-ci-fix to inspect failing GitHub Actions checks with gh, fix the root cause, validate locally, and report the updated status."
+
+policy:
+  allow_implicit_invocation: true
