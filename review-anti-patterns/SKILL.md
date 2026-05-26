@@ -13,6 +13,7 @@ Use the bundled references as checklists:
 
 - `references/coding-anti-patterns.md`: naming, control flow, error handling, tests, object design, controller/use-case boundaries, and maintainability smells.
 - `references/database-anti-patterns.md`: table design, constraints, types, SQL query risks, security, performance, and operational design smells.
+- `references/demo-calibration.md`: small annotated examples from the source demo files. Load when calibrating whether a compact snippet should become an actionable finding.
 
 ## Review Workflow
 
@@ -22,6 +23,7 @@ Use the bundled references as checklists:
    - Load `coding-anti-patterns.md` for application code, tests, controllers, services, or general architecture.
    - Load `database-anti-patterns.md` for migrations, schema definitions, SQL queries, ORM relations, persistence models, indexes, constraints, and data handling.
    - Load both when the change crosses application and persistence boundaries.
+   - Load `demo-calibration.md` when a finding is borderline, when reviewing small snippets, or when the user asks for example-driven anti-pattern detection.
 4. Search deliberately for likely signals rather than relying on memory:
    - Naming and structure: vague names, numbered variables, oversized functions/classes, duplicate logic, hardcoded settings, fat controllers, excessive arguments.
    - Error and control flow: swallowed exceptions, vague errors, deep nesting, long if/else chains, ignored return values.
