@@ -1,0 +1,7 @@
+interface:
+  display_name: "Review Anti-Patterns"
+  short_description: "Review code and database designs for anti-patterns"
+  default_prompt: "Use $review-anti-patterns to review code, schemas, migrations, or design docs for coding and database anti-patterns and report concrete findings."
+
+policy:
+  allow_implicit_invocation: true
