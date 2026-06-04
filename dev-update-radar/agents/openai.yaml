@@ -1,0 +1,7 @@
+interface:
+  display_name: "Dev Update Radar"
+  short_description: "Track API, tool, browser, OS, and npm updates"
+  default_prompt: "Use $dev-update-radar to check official update sources and package.json impact for my developer APIs, tools, browser, OS, and npm dependencies."
+
+policy:
+  allow_implicit_invocation: true
