@@ -152,6 +152,8 @@ def find_package_json(start: Path) -> Path:
         package_json = directory / "package.json"
         if package_json.exists():
             return package_json
+        if (directory / ".git").exists():
+            break
 
     raise SystemExit(f"no package.json found at or above {start}")
 

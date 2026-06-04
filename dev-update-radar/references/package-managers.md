@@ -1,6 +1,6 @@
 # npm Project Checks
 
-Use `scripts/inspect_package.py` first. It is read-only and does not call the network.
+Use `scripts/inspect_package.py` first. It is read-only, does not call the network, and stops parent-directory search at the nearest Git repository root.
 
 ```bash
 python3 dev-update-radar/scripts/inspect_package.py .
