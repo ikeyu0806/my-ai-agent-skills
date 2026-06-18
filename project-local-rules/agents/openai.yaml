@@ -2,3 +2,6 @@ interface:
   display_name: "Project Local Rules"
   short_description: "Load ignored per-project working rules"
   default_prompt: "Use $project-local-rules before editing or reviewing this repository."
+
+policy:
+  allow_implicit_invocation: true
