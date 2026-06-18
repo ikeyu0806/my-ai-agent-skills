@@ -34,6 +34,16 @@ rules/ikeyu0806/
   architecture.mdc
 ```
 
+Reserve `plan/` under any `ikeyu0806` directory for planning artifacts, not durable rules:
+
+```text
+ikeyu0806/
+  coding_guidelines.mdc       # rule input
+  database_design.mdc         # rule input
+  plan/
+    2026-06-18-feature-x.md   # planning output, not rule input
+```
+
 ## Core Workflow
 
 1. Find the repository root from the current working directory.
@@ -101,6 +111,8 @@ Treat these names as signals, not strict requirements:
 - `security.md`, `auth.md`, `privacy.md`: security, authorization, and sensitive-data handling.
 
 Always include obvious index files such as `README.md`, `index.md`, `overview.md`, or `rules.md` when present.
+
+Exclude `ikeyu0806/plan/` from rule loading. Treat it as an output directory for planning artifacts. Read files under `plan/` only when the user explicitly asks to inspect, update, continue, or summarize a saved plan.
 
 For `.mdc` files, respect simple Cursor frontmatter when present:
 

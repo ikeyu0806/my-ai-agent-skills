@@ -15,6 +15,7 @@ from pathlib import Path
 DEFAULT_RULES_DIR_NAME = "ikeyu0806"
 PRIORITY_RULES_DIRS = (Path("docs/ikeyu0806"),)
 DEFAULT_MAX_SEARCH_DEPTH = 8
+RULE_OUTPUT_DIR_NAMES = {"plan"}
 TEXT_SUFFIXES = {
     ".md",
     ".markdown",
@@ -362,6 +363,10 @@ def should_skip(path: Path) -> bool:
     return any(part in SKIP_DIR_NAMES for part in path.parts)
 
 
+def is_rule_output_path(path: Path) -> bool:
+    return bool(path.parts) and path.parts[0] in RULE_OUTPUT_DIR_NAMES
+
+
 def relative_depth(path: Path) -> int:
     return 0 if str(path) == "." else len(path.parts)
 
@@ -421,12 +426,13 @@ def discover_rules_in_dir(
     for path in sorted(absolute_rules_dir.rglob("*")):
         if not path.is_file():
             continue
-        if should_skip(path.relative_to(absolute_rules_dir)):
+        relative_rule_path = path.relative_to(absolute_rules_dir)
+        if should_skip(relative_rule_path) or is_rule_output_path(relative_rule_path):
             continue
         if not is_text_file(path):
             continue
         relpath = path.relative_to(root)
-        categories = categories_for(path.relative_to(absolute_rules_dir))
+        categories = categories_for(relative_rule_path)
         always_apply, globs = parse_cursor_frontmatter(path)
         glob_match = any_glob_matches(normalized_target_files, globs)
         score = score_file(relpath, categories, wanted, always_apply, glob_match)
