@@ -1,6 +1,6 @@
 ---
 name: project-local-rules
-description: Use when working inside any repository on coding, refactoring, debugging, test changes, database/schema design, migrations, architecture/design docs, implementation plans, reviews, PR feedback, or task execution where project-specific or personal rules may exist in an ignored local rules directory such as docs/ikeyu0806/ or in Cursor-style .cursor/rules/*.mdc files. This skill loads relevant per-project coding, design, database, review, testing, directory-structure, and workflow rules before acting.
+description: Use when working inside any repository on coding, refactoring, debugging, test changes, database/schema design, migrations, architecture/design docs, implementation plans, reviews, PR feedback, or task execution where project-specific or personal rules may exist in a local rules directory named ikeyu0806. This skill loads relevant per-project coding, design, database, review, testing, directory-structure, and workflow rules from Markdown or Cursor-style .mdc files before acting.
 ---
 
 # Project Local Rules
@@ -9,36 +9,41 @@ description: Use when working inside any repository on coding, refactoring, debu
 
 Use this skill as a loader for private, gitignored project rules. The rules live in the target repository, not in this global skill, so each project can carry its own local coding, design, database, review, testing, and workflow guidance.
 
-Default search locations:
+Default rules directory discovery:
 
 ```text
-docs/ikeyu0806/
-.cursor/rules/
+any directory named ikeyu0806 under the repository root
 ```
 
 Users do not need to run the loader command manually. When this skill is active, Codex should perform the loading step internally before editing, reviewing, designing, or planning work in the repository.
 
-Cursor-style `.mdc` files are supported. A project can use either flat files or a Cursor-like nested layout:
+Cursor-style `.mdc` files are supported anywhere under an `ikeyu0806` rules directory:
 
 ```text
 docs/ikeyu0806/
   coding.md
+  directory_structure.mdc
   database_design.mdc
-  .cursor/
-    rules/
-      directory_structure.mdc
-      testing-implementation.mdc
+  testing-implementation.mdc
+  backend/zod_schemas.mdc
+
+.codex/ikeyu0806/
+  review.md
+
+rules/ikeyu0806/
+  architecture.mdc
 ```
 
 ## Core Workflow
 
 1. Find the repository root from the current working directory.
-2. Check whether `docs/ikeyu0806/` or `.cursor/rules/` exists under that root.
-3. If neither directory exists, continue normally and mention only when the absence matters.
-4. If either directory exists, inspect the index of available rule files before making code, schema, review, design, or planning decisions.
-5. Load only the files relevant to the current task.
-6. Apply the local rules together with the repository's existing conventions.
-7. If a local rule conflicts with system/developer instructions, the user's explicit request, security constraints, or the existing codebase, surface the conflict before acting.
+2. Find directories named `ikeyu0806` under that root, preferring `docs/ikeyu0806/` when present.
+3. Prune expensive generated trees such as `.git`, `node_modules`, `.next`, `dist`, `build`, `coverage`, `vendor`, and virtualenv/cache directories while searching.
+4. If no `ikeyu0806` directory exists, continue normally and mention only when the absence matters.
+5. If any exist, inspect the index of available rule files before making code, schema, review, design, or planning decisions.
+6. Load only the files relevant to the current task.
+7. Apply the local rules together with the repository's existing conventions.
+8. If a local rule conflicts with system/developer instructions, the user's explicit request, security constraints, or the existing codebase, surface the conflict before acting.
 
 Use this priority order:
 
@@ -66,16 +71,21 @@ When target files are known, pass them so Cursor-style `globs` can be applied:
 python3 ~/.codex/skills/project-local-rules/scripts/load_project_rules.py --task "edit campaign API" --file src/app/api/campaigns/route.ts --dump
 ```
 
+By default the loader searches up to 8 directory levels for directories named `ikeyu0806`. For unusually deep repositories, pass `--max-search-depth N`; for a known location, pass `--rules-dir path/to/ikeyu0806`.
+
 If this skill is checked out somewhere other than `~/.codex/skills`, run the script from that skill directory instead.
 
 Manual fallback:
 
 ```bash
 git rev-parse --show-toplevel
-rg --files docs/ikeyu0806 .cursor/rules
+find . \
+  -path './.git' -prune -o \
+  -path './node_modules' -prune -o \
+  -type d -name ikeyu0806 -print
 ```
 
-Then read only the relevant files with `sed -n` or another normal file reader.
+Then read only the relevant files under those directories with `rg --files`, `sed -n`, or another normal file reader.
 
 ## Rule File Conventions
 

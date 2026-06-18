@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -11,7 +12,9 @@ from fnmatch import fnmatch
 from pathlib import Path
 
 
-DEFAULT_RULES_DIRS = (Path("docs/ikeyu0806"), Path(".cursor/rules"))
+DEFAULT_RULES_DIR_NAME = "ikeyu0806"
+PRIORITY_RULES_DIRS = (Path("docs/ikeyu0806"),)
+DEFAULT_MAX_SEARCH_DEPTH = 8
 TEXT_SUFFIXES = {
     ".md",
     ".markdown",
@@ -24,7 +27,21 @@ TEXT_SUFFIXES = {
     ".json",
     ".toml",
 }
-SKIP_DIR_NAMES = {".git", ".venv", "__pycache__", "node_modules", "dist", "build"}
+SKIP_DIR_NAMES = {
+    ".git",
+    ".next",
+    ".turbo",
+    ".venv",
+    "__pycache__",
+    "build",
+    "coverage",
+    "dist",
+    "node_modules",
+    "out",
+    "target",
+    "tmp",
+    "vendor",
+}
 
 CORE_NAMES = {
     "readme",
@@ -345,6 +362,48 @@ def should_skip(path: Path) -> bool:
     return any(part in SKIP_DIR_NAMES for part in path.parts)
 
 
+def relative_depth(path: Path) -> int:
+    return 0 if str(path) == "." else len(path.parts)
+
+
+def discover_rules_dirs(root: Path, dir_name: str, max_depth: int) -> list[Path]:
+    """Find rule directories named dir_name while pruning expensive generated trees."""
+
+    rules_dirs: list[Path] = []
+    seen: set[Path] = set()
+
+    for rules_dir in PRIORITY_RULES_DIRS:
+        absolute_rules_dir = root / rules_dir
+        if absolute_rules_dir.is_dir():
+            rules_dirs.append(rules_dir)
+            seen.add(absolute_rules_dir.resolve())
+
+    for dirpath, dirnames, _filenames in os.walk(root, topdown=True):
+        current = Path(dirpath)
+        try:
+            rel_current = current.relative_to(root)
+        except ValueError:
+            dirnames[:] = []
+            continue
+
+        dirnames[:] = sorted(name for name in dirnames if name not in SKIP_DIR_NAMES)
+        if relative_depth(rel_current) >= max_depth:
+            dirnames[:] = []
+            continue
+
+        for name in list(dirnames):
+            if name != dir_name:
+                continue
+            candidate = current / name
+            resolved = candidate.resolve()
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            rules_dirs.append(candidate.relative_to(root))
+
+    return rules_dirs
+
+
 def discover_rules_in_dir(
     root: Path,
     rules_dir: Path,
@@ -451,7 +510,7 @@ def print_dump(rules: list[RuleFile], max_chars: int) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Locate relevant files in a project's gitignored docs/ikeyu0806 rules directory."
+        description="Locate relevant files in project-local rules directories named ikeyu0806."
     )
     parser.add_argument("--root", type=Path, default=None, help="Repository root. Defaults to git root from cwd.")
     parser.add_argument(
@@ -460,6 +519,17 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         default=None,
         help="Rules directory relative to repo root, or an absolute path.",
+    )
+    parser.add_argument(
+        "--rules-dir-name",
+        default=DEFAULT_RULES_DIR_NAME,
+        help="Directory name to discover when --rules-dir is not provided.",
+    )
+    parser.add_argument(
+        "--max-search-depth",
+        type=int,
+        default=DEFAULT_MAX_SEARCH_DEPTH,
+        help="Maximum directory depth to search for rules directories.",
     )
     parser.add_argument("--task", default="", help="Short description of the current task.")
     parser.add_argument(
@@ -481,7 +551,11 @@ def main(argv: list[str]) -> int:
 
     cwd = Path.cwd()
     root = args.root.resolve() if args.root is not None else find_repo_root(cwd)
-    rules_dirs = args.rules_dir if args.rules_dir is not None else list(DEFAULT_RULES_DIRS)
+    rules_dirs = (
+        args.rules_dir
+        if args.rules_dir is not None
+        else discover_rules_dirs(root, args.rules_dir_name, max(0, args.max_search_depth))
+    )
     rules = discover_rules(root, rules_dirs, args.task, args.target_files, args.all)
     print_index(root, rules_dirs, rules)
     if args.dump and rules:
