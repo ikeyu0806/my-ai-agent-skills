@@ -1,6 +1,6 @@
 ---
 name: google-ads-api-dev
-description: Use when developing, testing, or exercising Google Ads API features against a Google Ads TEST account during local development. Covers pre-implementation connectivity probes using the target backend's environment variables and PostgreSQL-backed account data, OAuth2 access-token minting, REST (googleads.googleapis.com) GAQL search, and create/update mutate operations for campaigns, budgets, ad groups, ads, and keywords, plus running those operations through the target project's own runtime (e.g., a NestJS/TypeScript service, a Python client) when the project already integrates the Google Ads API. The skill defaults to executing real create/update calls because the target is a non-billable test account, and enforces a test-account guardrail before any mutate.
+description: Use when developing, debugging, or testing backend code that directly calls or is discovered to depend on the Google Ads API for ad delivery, campaign deploy/sync, campaign optimization/proposal apply, keyword planning/forecasting, metrics, or ad-spend billing, even when the user did not explicitly say "Google Ads API". Covers TEST-account pre-implementation connectivity probes using target backend env + PostgreSQL account data, OAuth2 token minting, REST GAQL search, create/update mutate operations, and project-runtime execution through existing services. Defaults to real create/update only for non-billable TEST accounts and enforces test-account guardrails before mutate.
 ---
 
 # Google Ads API Dev
@@ -14,10 +14,12 @@ Develop and exercise Google Ads API features locally against a **test account**.
 - "Use my project's GoogleAdsService to do X against the test account."
 - "Exercise the GAQL query / mutate path end to end."
 - "Before implementing this backend Google Ads feature, check whether the existing env + PostgreSQL data can reach the test account."
+- The user asks for a broader backend implementation/debugging task and code inspection shows the path depends on Google Ads API, even if the prompt did not name Google Ads API.
+- Project code paths such as ad delivery, campaign deploy/sync, optimization proposal apply, keyword planning/forecasting, metrics collection, or ad-spend billing resolve to existing Google Ads services/clients.
 
 ## Pre-Implementation Connectivity Gate
 
-When the task is to implement or debug backend code that will call Google Ads API, first check whether the target project already has enough local configuration to prove API connectivity before editing production code.
+When the task is to implement or debug backend code that will call Google Ads API, or code inspection reveals that the target behavior depends on Google Ads API, first check whether the target project already has enough local configuration to prove API connectivity before editing production code.
 
 Run this gate when all of these are true:
 - the repo already has a Google Ads integration or backend service wrapper;
