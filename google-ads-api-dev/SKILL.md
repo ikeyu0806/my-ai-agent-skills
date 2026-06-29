@@ -1,6 +1,6 @@
 ---
 name: google-ads-api-dev
-description: Use when developing, testing, or exercising Google Ads API features against a Google Ads TEST account during local development. Covers OAuth2 access-token minting, REST (googleads.googleapis.com) GAQL search and create/update mutate operations for campaigns, budgets, ad groups, ads, and keywords, plus running those operations through the target project's own runtime (e.g., a NestJS/TypeScript service, a Python client) when the project already integrates the Google Ads API. The skill defaults to executing real create/update calls because the target is a non-billable test account, and enforces a test-account guardrail before any mutate.
+description: Use when developing, testing, or exercising Google Ads API features against a Google Ads TEST account during local development. Covers pre-implementation connectivity probes using the target backend's environment variables and PostgreSQL-backed account data, OAuth2 access-token minting, REST (googleads.googleapis.com) GAQL search, and create/update mutate operations for campaigns, budgets, ad groups, ads, and keywords, plus running those operations through the target project's own runtime (e.g., a NestJS/TypeScript service, a Python client) when the project already integrates the Google Ads API. The skill defaults to executing real create/update calls because the target is a non-billable test account, and enforces a test-account guardrail before any mutate.
 ---
 
 # Google Ads API Dev
@@ -13,6 +13,33 @@ Develop and exercise Google Ads API features locally against a **test account**.
 - "Run this Google Ads API feature against the test account and show the result."
 - "Use my project's GoogleAdsService to do X against the test account."
 - "Exercise the GAQL query / mutate path end to end."
+- "Before implementing this backend Google Ads feature, check whether the existing env + PostgreSQL data can reach the test account."
+
+## Pre-Implementation Connectivity Gate
+
+When the task is to implement or debug backend code that will call Google Ads API, first check whether the target project already has enough local configuration to prove API connectivity before editing production code.
+
+Run this gate when all of these are true:
+- the repo already has a Google Ads integration or backend service wrapper;
+- local env/config exposes the Google Ads developer token, OAuth/client credentials or service-account auth, API version if configurable, and database connection/encryption settings;
+- PostgreSQL (or the project's configured DB) contains the tenant/account/customer records needed by the existing code path.
+
+Use the project runtime for the probe, not a hand-written parallel client. Load the project's normal env file, use its ORM/repositories or a narrow read-only SQL query to locate a test account row, then call the existing Google Ads service/client with a read-only GAQL request:
+
+```sql
+SELECT customer.id, customer.descriptive_name, customer.test_account, customer.manager
+FROM customer
+LIMIT 1
+```
+
+Rules for the gate:
+- **Do it before implementation when feasible.** If env + DB + account data are present, run the probe before changing the feature code so auth, login-customer-id, token decryption, and customer scope are proven.
+- **Keep DB reads narrow.** Select only non-secret identifiers needed to choose the tenant/account/customer. Never dump encrypted refresh tokens, client secrets, service-account JSON, or access tokens.
+- **Prefer existing code paths.** In a NestJS/TypeScript backend, create a small standalone app-context runner or existing script that resolves the real service (for example `GoogleAdsClientService`) and calls `googleAds:search`; in Python or other stacks, do the same through the app's existing client wrapper.
+- **Treat failure as signal.** If the probe fails because env, DB rows, credentials, login-customer-id, or account flags are missing, report that concrete blocker and fix the integration/config path first when it is in scope. Do not implement against an unverified assumption unless the user explicitly asks to proceed without live connectivity.
+- **No mutate during the gate.** The gate is read-only. Mutate safety rules still apply later.
+
+For project-specific runner patterns, including env + PostgreSQL-backed account discovery, see `references/runtime-adapters.md`.
 
 ## Execution Strategy: Project Runtime First, REST Fallback
 
@@ -24,7 +51,7 @@ Decide how to execute, in this order:
    - Source modules/services that already wrap auth and the client (e.g., a NestJS `GoogleAdsService`, a repository, a usecase).
    - Existing env/config for `developer-token`, OAuth client, refresh token, `login-customer-id`.
 
-   If found, run the feature **through the project's own runtime and code path** so you exercise the real integration: write a small one-off runner (e.g., `ts-node`/`tsx` script, a Nest standalone application context, a Jest/Vitest test, an existing CLI command, or an HTTP request to a dev endpoint) that calls the project's existing service against the **test-account** customer ID + credentials. Reuse the project's auth and client config; do not reimplement it.
+   If found, run the feature **through the project's own runtime and code path** so you exercise the real integration: write a small one-off runner (e.g., `ts-node`/`tsx` script, a Nest standalone application context, a Jest/Vitest test, an existing CLI command, or an HTTP request to a dev endpoint) that calls the project's existing service against the **test-account** customer ID + credentials. Reuse the project's auth and client config; do not reimplement it. When the project stores account/customer/token metadata in PostgreSQL, use that DB-backed code path for the first read-only connectivity probe.
 
 2. **Bundled REST fallback (when no project integration exists, or the user wants raw REST).**
    Use the bundled scripts to talk to `https://googleads.googleapis.com` directly with `curl`. See `references/rest-api.md`. This is also the fastest way to reproduce a request/response in isolation.
@@ -91,21 +118,23 @@ bash google-ads-api-dev/scripts/gads_mutate.sh campaignBudgets '{
 ## Typical Workflow
 
 1. Establish target: confirm test customer ID, test MCC `login-customer-id`, and that credentials are the test/dev set.
-2. Run `verify_test_account.sh`. Do not proceed to mutate until it confirms `test_account = true`.
-3. Choose execution path: project runtime (if integrated) or bundled REST. See `references/runtime-adapters.md`.
-4. For a new mutate, run with `--validate-only` first, fix any field/enum errors, then commit.
-5. Report what was created/updated with resource names and the GAQL you'd use to re-read it.
-6. Offer cleanup (pause or remove the test resources) when done.
+2. If implementing/debugging backend code and env + PostgreSQL account data appear available, run the pre-implementation read-only connectivity gate through the project runtime.
+3. Run `verify_test_account.sh` or an equivalent project-runtime `customer.test_account` assertion. Do not proceed to mutate until it confirms `test_account = true`.
+4. Choose execution path: project runtime (if integrated) or bundled REST. See `references/runtime-adapters.md`.
+5. For a new mutate, run with `--validate-only` first, fix any field/enum errors, then commit.
+6. Report what was created/updated with resource names and the GAQL you'd use to re-read it.
+7. Offer cleanup (pause or remove the test resources) when done.
 
 ## References
 
 - `references/rest-api.md` — REST base URLs, headers, OAuth token exchange, GAQL search vs searchStream, and the create/update mutate shape for budgets, campaigns, ad groups, ads (RSA), and keywords (ad group criteria), with `resourceName` / `update_mask` rules.
-- `references/runtime-adapters.md` — detecting and reusing an existing project integration; concrete runners for NestJS/TypeScript, plain Node/TS, and Python; choosing the smallest safe runner.
+- `references/runtime-adapters.md` — detecting and reusing an existing project integration; pre-implementation env + PostgreSQL connectivity probes; concrete runners for NestJS/TypeScript, plain Node/TS, and Python; choosing the smallest safe runner.
 - `references/safety.md` — the test-account model, `customer.test_account`, `validateOnly`, and redaction checklist.
 
 ## Output Pattern
 
 - **Target**: test customer ID + login-customer-id + API version + execution path (project runtime vs REST).
+- **Preflight**: whether env + DB-backed project-runtime connectivity was attempted, succeeded, or was blocked.
 - **Guardrail**: result of `verify_test_account.sh`.
 - **Action**: the operation(s) performed (validate → commit), with returned resource names.
 - **Verify**: a GAQL query to re-read the result.

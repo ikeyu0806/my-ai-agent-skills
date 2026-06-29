@@ -1,7 +1,7 @@
 interface:
   display_name: "Google Ads API Dev"
-  short_description: "Exercise Google Ads API on a test account"
-  default_prompt: "Use $google-ads-api-dev to run Google Ads API features (GAQL search and create/update mutate) against my test account, via the project's runtime when integrated or bundled REST otherwise, after verifying the customer is a test account."
+  short_description: "Probe and exercise Google Ads API on a test account"
+  default_prompt: "Use $google-ads-api-dev to probe Google Ads API connectivity through my backend env/PostgreSQL setup before implementation, then exercise GAQL or test-account mutate paths after verifying customer.test_account."
 
 policy:
   allow_implicit_invocation: true

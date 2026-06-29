@@ -25,6 +25,9 @@ grep -RniE "GoogleAds(Service|Client|Api|Repository|Module)|developer.?token|log
   --include=*.ts --include=*.js --include=*.py src app 2>/dev/null | head -50
 # env/config keys
 grep -RniE "GOOGLE_ADS|GADS_|DEVELOPER_TOKEN|LOGIN_CUSTOMER|REFRESH_TOKEN" .env* config 2>/dev/null
+# DB-backed account/token metadata
+grep -RniE "GoogleAdsAccount|GoogleOAuthAccount|customerId|isTestAccount|parentMccId|encryptedRefreshToken|defaultGoogleAdsAccountId" \
+  --include=*.prisma --include=*.ts --include=*.js --include=*.py prisma src app 2>/dev/null | head -80
 ```
 
 If a service/module wraps the client, **reuse it**. Reuse the project's auth/config
@@ -33,7 +36,114 @@ loading; only override the *customer id* and *credentials* to point at the test 
 
 If no integration exists, use the bundled REST scripts (`references/rest-api.md`).
 
-## 2. Pick the smallest safe runner
+## 2. Pre-implementation connectivity probe: env + PostgreSQL
+
+When implementing a backend feature and the project already has env + PostgreSQL
+data for Google Ads, prove connectivity before production-code edits:
+
+1. Load the project's normal local/dev env the same way its backend does. Confirm
+   required keys are present by name only: developer token, OAuth client config or
+   service-account auth, DB URL, encryption key if refresh tokens are encrypted,
+   and manager/login customer id if the app uses one.
+2. Discover the account row through the existing ORM/repository, or a narrow
+   read-only query. Select only non-secret fields such as tenant id, app account
+   id, Google Ads customer id, parent MCC id, provisioning source, account type,
+   status, currency, and `isTestAccount`. Do not select or print encrypted token
+   blobs unless the existing service needs them internally.
+3. Choose a test account explicitly. Prefer `isTestAccount = true` or a user-
+   supplied tenant/account id. If only billable accounts are present, stop before
+   any mutate; read-only GAQL is acceptable only if the user asked for it.
+4. Run a read-only GAQL call through the existing service/client:
+
+```sql
+SELECT customer.id, customer.descriptive_name, customer.test_account, customer.manager
+FROM customer
+LIMIT 1
+```
+
+5. Treat the probe result as the first implementation fact:
+   - success means auth, token decryption/refresh, login-customer-id, API version,
+     and customer scope are wired well enough to build on;
+   - failure means fix or report the concrete config/auth/account blocker before
+     implementing behavior that depends on the API.
+
+Keep the runner temporary unless the project already has a dev-script location
+where integration probes belong.
+
+### Example: CAS Marketing On (`~/workspace/cas-marketing-on`)
+
+Observed shape:
+- backend is NestJS/TypeScript with Prisma/PostgreSQL;
+- env examples include `DATABASE_URL`, `GCP_CLIENT_ID`, `GCP_CLIENT_SECRET`,
+  `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_MANAGER_CUSTOMER_ID`,
+  `GOOGLE_ADS_SERVICE_ACCOUNT_KEY_FILE`, and `ENCRYPTION_KEY`;
+- account data lives in Prisma models like `GoogleAdsAccount` and
+  `GoogleOAuthAccount`; `Tenant.defaultGoogleAdsAccountId` can identify the
+  default delivery account;
+- the existing API path is `GoogleAdsClientService.callGoogleAdsAPI(...)`.
+
+A probe should therefore resolve the real Nest provider and let the app decrypt
+tokens / resolve service-account auth internally. Example shape, to adapt to the
+current codebase:
+
+```ts
+import 'dotenv/config';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from '../src/app.module';
+import { prisma } from '../src/lib/prisma';
+import { GoogleAdsClientService } from '../src/features/google-ads/client';
+
+async function main() {
+  const explicitTenantId = process.env.GADS_TENANT_ID;
+  const explicitAccountId = process.env.GADS_GOOGLE_ADS_ACCOUNT_ID;
+
+  const account = explicitAccountId
+    ? await prisma.googleAdsAccount.findFirst({
+        where: { id: explicitAccountId, tenantId: explicitTenantId },
+        select: { id: true, tenantId: true, customerId: true, isTestAccount: true },
+      })
+    : await prisma.googleAdsAccount.findFirst({
+        where: { isTestAccount: true },
+        select: { id: true, tenantId: true, customerId: true, isTestAccount: true },
+        orderBy: { updatedAt: 'desc' },
+      });
+
+  if (!account) throw new Error('No Google Ads test account row found');
+
+  const app = await NestFactory.createApplicationContext(AppModule, {
+    logger: ['error', 'warn'],
+  });
+  try {
+    const client = app.get(GoogleAdsClientService);
+    const result = await client.callGoogleAdsAPI(
+      account.tenantId,
+      account.id,
+      'googleAds:search',
+      'POST',
+      {
+        query:
+          'SELECT customer.id, customer.descriptive_name, customer.test_account, customer.manager FROM customer LIMIT 1',
+      },
+      { allowInactiveOrNonJpy: true },
+    );
+    console.log(JSON.stringify({ account, result }, null, 2));
+  } finally {
+    await app.close();
+  }
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
+```
+
+Run it with the backend's local env loaded. Do not print `.env.local`, encrypted
+refresh-token columns, service-account JSON, access tokens, or authorization
+headers. If the selected row has `isTestAccount = false`, do not use it for
+autonomous mutate even if the read-only probe succeeds.
+
+## 3. Pick the smallest safe runner
 
 In order of preference:
 1. **Existing CLI / npm script / management command** the project already exposes.
@@ -44,7 +154,7 @@ In order of preference:
 Always set the environment so the project resolves the **test** customer and the
 test credentials. Confirm with the user which env file / vars map to test.
 
-## 3. NestJS / TypeScript
+## 4. NestJS / TypeScript
 
 Prefer a standalone application context so providers (and DI) initialize exactly
 as in the app, then resolve the existing service and call it.
@@ -92,7 +202,7 @@ Notes:
 - Keep the runner under the repo's existing `scripts/` if one exists; otherwise a
   temporary file is fine — offer to delete it after.
 
-## 4. Plain Node / TypeScript (no Nest)
+## 5. Plain Node / TypeScript (no Nest)
 
 ```ts
 import { GoogleAdsApi } from 'google-ads-api';
@@ -110,7 +220,7 @@ const rows = await customer.query(`SELECT campaign.id, campaign.name FROM campai
 console.log(rows);
 ```
 
-## 5. Python
+## 6. Python
 
 ```python
 # uses google-ads.yaml or GOOGLE_ADS_* env vars
@@ -123,7 +233,7 @@ for row in resp:
     print(row.campaign.id, row.campaign.name)
 ```
 
-## 6. Guardrail still applies
+## 7. Guardrail still applies
 
 Whichever runtime you use, the **test-account check comes first**. Either:
 - run `scripts/verify_test_account.sh` (REST) before the project runner, or
