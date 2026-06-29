@@ -1,6 +1,6 @@
 ---
 name: google-ads-api-dev
-description: Use when developing, debugging, or testing backend code that directly calls or is discovered to depend on the Google Ads API for ad delivery, campaign deploy/sync, campaign optimization/proposal apply, keyword planning/forecasting, metrics, or ad-spend billing, even when the user did not explicitly say "Google Ads API". Covers TEST-account pre-implementation connectivity probes using target backend env + PostgreSQL account data, OAuth2 token minting, REST GAQL search, create/update mutate operations, and project-runtime execution through existing services. Defaults to real create/update only for non-billable TEST accounts and enforces test-account guardrails before mutate.
+description: Use when developing, debugging, or testing backend code that directly calls or is discovered to depend on the Google Ads API for ad delivery, campaign deploy/sync, campaign optimization/proposal apply, keyword planning/forecasting, metrics, or ad-spend billing, even when the user did not explicitly say "Google Ads API". Covers TEST-account pre-implementation connectivity probes using target backend env + PostgreSQL account data, Docker Compose DB host troubleshooting, OAuth2 token minting, REST GAQL search, create/update mutate operations, and project-runtime execution through existing services. Defaults to real create/update only for non-billable TEST accounts and enforces test-account guardrails before mutate.
 ---
 
 # Google Ads API Dev
@@ -38,7 +38,8 @@ Rules for the gate:
 - **Do it before implementation when feasible.** If env + DB + account data are present, run the probe before changing the feature code so auth, login-customer-id, token decryption, and customer scope are proven.
 - **Keep DB reads narrow.** Select only non-secret identifiers needed to choose the tenant/account/customer. Never dump encrypted refresh tokens, client secrets, service-account JSON, or access tokens.
 - **Prefer existing code paths.** In a NestJS/TypeScript backend, create a small standalone app-context runner or existing script that resolves the real service (for example `GoogleAdsClientService`) and calls `googleAds:search`; in Python or other stacks, do the same through the app's existing client wrapper.
-- **Treat failure as signal.** If the probe fails because env, DB rows, credentials, login-customer-id, or account flags are missing, report that concrete blocker and fix the integration/config path first when it is in scope. Do not implement against an unverified assumption unless the user explicitly asks to proceed without live connectivity.
+- **Fix execution-context failures before giving up.** If DB host resolution fails (common example: `DATABASE_URL` host is `db` while running from the Mac host shell), inspect Docker Compose context and either run the probe inside the backend/worker container or use a host-reachable DB URL such as `localhost:<published-port>`. See `references/runtime-adapters.md`.
+- **Treat failure as signal.** If the probe fails because env, DB rows, credentials, login-customer-id, account flags, or DB/container context are missing, report that concrete blocker and fix the integration/config path first when it is in scope. Do not implement against an unverified assumption unless the user explicitly asks to proceed without live connectivity.
 - **No mutate during the gate.** The gate is read-only. Mutate safety rules still apply later.
 
 For project-specific runner patterns, including env + PostgreSQL-backed account discovery, see `references/runtime-adapters.md`.
@@ -136,7 +137,7 @@ bash google-ads-api-dev/scripts/gads_mutate.sh campaignBudgets '{
 ## Output Pattern
 
 - **Target**: test customer ID + login-customer-id + API version + execution path (project runtime vs REST).
-- **Preflight**: whether env + DB-backed project-runtime connectivity was attempted, succeeded, or was blocked.
+- **Preflight**: whether env + DB-backed project-runtime connectivity was attempted, succeeded, retried in the correct DB/container context, or was blocked.
 - **Guardrail**: result of `verify_test_account.sh`.
 - **Action**: the operation(s) performed (validate → commit), with returned resource names.
 - **Verify**: a GAQL query to re-read the result.

@@ -70,6 +70,58 @@ LIMIT 1
 Keep the runner temporary unless the project already has a dev-script location
 where integration probes belong.
 
+### If PostgreSQL is unreachable
+
+Do not stop at "DB host is unreachable" when the env keys are present. First
+identify where the preflight is running and whether the DB hostname is valid in
+that network namespace.
+
+Common failure:
+- `DATABASE_URL` uses host `db`.
+- `db` resolves inside the Docker Compose network.
+- `db` does not resolve from the Mac host shell.
+- Host-shell preflight then fails with errors such as `getaddrinfo ENOTFOUND db`.
+
+For DB connectivity failures, collect only read-only, non-secret diagnostics:
+
+1. Execution target: Mac host shell, backend container, or worker/job container.
+2. Exact command that failed.
+3. Masked DB env only: `DATABASE_URL` / `DIRECT_URL` / Prisma DB env with
+   password replaced by `[REDACTED]`; keep host, port, database, and user visible.
+4. `docker compose config --services`
+5. `docker compose ps -a`
+6. `docker compose port db 5432`
+7. `docker compose logs --no-color --tail 100 db`
+8. Full error text, because `ENOTFOUND`, `ECONNREFUSED`, and auth failures imply
+   different fixes.
+
+Then choose the execution context:
+- If running from the host shell and DB host is `db`, either run the preflight
+  inside the backend/worker container, or override the DB URL to the host-
+  published port from `docker compose port db 5432` (usually `localhost:<port>`).
+- If running inside a Compose service, keep the Compose service hostname
+  (`db`) and container port (`5432`).
+- If DB logs show startup/auth/migration problems, fix those before retrying
+  Google Ads GAQL; the Google Ads API path has not been exercised yet.
+
+Never paste raw `.env.local` or unmasked credentials into the response. Show only
+masked DB URLs and service names/statuses.
+
+#### CAS Marketing On DB context
+
+For `~/workspace/cas-marketing-on`, expect a NestJS backend with Docker Compose
+PostgreSQL. In this project, `db:5432` is the container-network address, while
+host-shell commands typically need the Compose-published host port (documented
+locally as `localhost:5433` when using the default setup). Prefer one of these:
+
+- run the Nest preflight runner inside the backend container using the existing
+  container env and `db:5432`;
+- run from the host shell with a host-reachable `DATABASE_URL` that points at
+  `localhost:<published-db-port>`.
+
+Only after the Prisma/account lookup works should the runner proceed to the
+read-only `googleAds:search` request.
+
 ### Example: CAS Marketing On (`~/workspace/cas-marketing-on`)
 
 Observed shape:

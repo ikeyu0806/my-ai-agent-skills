@@ -1,7 +1,7 @@
 interface:
   display_name: "Google Ads API Dev"
   short_description: "Probe and exercise Google Ads API on a test account"
-  default_prompt: "Use $google-ads-api-dev when a backend task explicitly or implicitly depends on Google Ads API, probe env/PostgreSQL connectivity first, then exercise GAQL or test-account mutate paths after verifying customer.test_account."
+  default_prompt: "Use $google-ads-api-dev when a backend task depends on Google Ads API, fix env/PostgreSQL or Docker Compose DB context first, then exercise GAQL or test-account mutate paths after verifying customer.test_account."
 
 policy:
   allow_implicit_invocation: true
