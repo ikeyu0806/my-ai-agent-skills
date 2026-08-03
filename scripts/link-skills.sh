@@ -18,7 +18,7 @@ that contains SKILL.md.
 
 Options:
   --agent NAME        Target agent: codex, claude, cursor, or all.
-                      May be passed more than once. Default: codex.
+                      May be passed more than once. Default: all.
   --dry-run          Show planned actions without changing files.
   --force            Replace existing symlinks that point somewhere else.
                       Real files/directories are never overwritten.
@@ -102,7 +102,7 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 
 if [ "${#AGENT_ARGS[@]}" -eq 0 ]; then
-  AGENT_ARGS=(codex)
+  AGENT_ARGS=(codex claude cursor)
 fi
 
 selected_agents=()

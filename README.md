@@ -16,22 +16,18 @@ The scripts only add or remove skill directory symlinks. They do not edit Cursor
 
 ## Install Skills
 
-Preview the default Codex install:
+Preview the default install for every supported agent:
 
 ```bash
 bash scripts/link-skills.sh --dry-run
 ```
 
-Preview links for every supported agent:
-
-```bash
-bash scripts/link-skills.sh --agent all --dry-run
-```
+`--agent all` is equivalent to the default and can be used when you want to make the scope explicit.
 
 Link every direct child directory that contains `SKILL.md` into all supported agents:
 
 ```bash
-bash scripts/link-skills.sh --agent all
+bash scripts/link-skills.sh
 ```
 
 Link into a specific agent:
