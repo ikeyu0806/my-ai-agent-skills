@@ -157,6 +157,16 @@ $google-ads-api-dev を使って、テストアカウントに検索キャンペ
 $google-ads-api-dev を使って、このNestJSプロジェクトの GoogleAdsService 経由でテストアカウントにキャンペーンをcreate/updateして結果を確認して。
 ```
 
+```text
+$git-sync-base を使って、現在のfeature branchに最新のorigin/mainを取り込み、conflictを解消してローカル検証して。
+```
+
+Claude Codeでは、同じSkillをslash commandとして直接呼び出せます。
+
+```text
+/git-sync-base main
+```
+
 You can also ask naturally when the skill description matches the task:
 
 ```text
@@ -170,6 +180,7 @@ Docker Composeで動くローカルWebサービスの500エラーを、appログ
 GitHub PRのレビュー指摘と赤いCIを確認して、直せるものは修正してpushし、レビューコメントに返信して。
 現在のブランチのPRに CodeRabbit の review/full review/pause/resume/autofix/resolve などのコマンドを gh で送って。
 GitHub Actions の失敗内容を gh で調べて、直せるCI failureは修正して。
+現在のfeature branchを最新のPR base branchに同期して、mergeまたはrebase conflictを解消して。
 普段使っているAPI、開発ツール、Chrome、macOS、npm依存関係のアップデートで対応が必要なものを調べて。
 Google Adsのテストアカウントにキャンペーンを作って、GAQLで作成結果を確認して。本番アカウントには触らないで。
 ```
@@ -183,5 +194,6 @@ Google Adsのテストアカウントにキャンペーンを作って、GAQLで
 - `gh-pr-review-ci`: Handle GitHub PR review feedback and failing GitHub Actions checks with `gh`: inspect comments and CI logs, fix actionable issues, validate locally, push, and reply on the PR.
 - `gh-coderabbit-command`: Send CodeRabbit commands to the current GitHub PR with `gh`, choosing PR comments or PR body placement safely for review, full review, pause/resume, autofix, resolve, configuration, ignore, and summary placeholders.
 - `gh-ci-fix`: Diagnose and fix failing GitHub Actions checks with `gh`: inspect PR checks and run logs, identify the root cause, apply scoped code or workflow fixes, validate locally, push when requested, and report updated CI status.
+- `git-sync-base`: Update the current feature branch from the latest explicit, PR, or remote-default base branch; choose merge or rebase from repository policy, resolve conflicts semantically, validate the integrated result, and push only when requested.
 - `dev-update-radar`: Collect current official update information for Google Ads API, Meta APIs, Stripe API, Auth0, Codex, Claude Code, Ghostty, Chrome, macOS, and npm projects, then classify breaking changes, deprecations, security fixes, migration deadlines, and package.json impact.
 - `google-ads-api-dev`: Develop and exercise Google Ads API features against a TEST account during local development — OAuth2 token minting, GAQL search, and create/update mutate via REST, or through the target project's own runtime (NestJS/TypeScript, Python, etc.) when it already integrates the API. Enforces a `customer.test_account` guardrail before any mutate.
