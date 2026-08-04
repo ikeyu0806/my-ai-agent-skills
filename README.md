@@ -167,6 +167,10 @@ Claude Codeでは、同じSkillをslash commandとして直接呼び出せます
 /git-sync-base main
 ```
 
+```text
+/gh-create-review-pr --base main
+```
+
 You can also ask naturally when the skill description matches the task:
 
 ```text
@@ -195,6 +199,7 @@ Google Adsのテストアカウントにキャンペーンを作って、GAQLで
 - `gh-pr-review-ci`: Handle GitHub PR review feedback and failing GitHub Actions checks with `gh`: inspect comments and CI logs, fix actionable issues, validate locally, push, and reply on the PR.
 - `gh-coderabbit-command`: Send CodeRabbit commands to the current GitHub PR with `gh`, choosing PR comments or PR body placement safely for review, full review, pause/resume, autofix, resolve, configuration, ignore, and summary placeholders.
 - `gh-ci-fix`: Diagnose and fix failing GitHub Actions checks with `gh`: inspect PR checks and run logs, identify the root cause, apply scoped code or workflow fixes, validate locally, push when requested, and report updated CI status.
+- `gh-create-review-pr`: Create a non-draft GitHub PR from the current branch with an accurate title and description, local validation, and a final ready-for-review state check.
 - `git-sync-base`: Update the current feature branch from the latest explicit, PR, or remote-default base branch; choose merge or rebase from repository policy, resolve conflicts semantically, validate the integrated result, and push only when requested.
 - `git-prune-local-branches`: Safely identify local branches with no open GitHub pull request, then delete confirmed candidates without force-deleting unmerged branches or touching the default branch and active worktrees.
 - `dev-update-radar`: Collect current official update information for Google Ads API, Meta APIs, Stripe API, Auth0, Codex, Claude Code, Ghostty, Chrome, macOS, and npm projects, then classify breaking changes, deprecations, security fixes, migration deadlines, and package.json impact.
