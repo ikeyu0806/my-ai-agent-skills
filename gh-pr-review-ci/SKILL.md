@@ -7,7 +7,7 @@ description: 'Use when asked to restore or monitor GitHub pull request merge rea
 
 ## Overview
 
-Use this skill to bring a PR to the best observed merge-ready state: address actionable reviewer feedback, fix failed GitHub Actions checks, update an out-of-date branch, resolve safe merge conflicts, push a scoped branch update, and monitor the resulting PR state. Prefer `gh` commands for all GitHub reads and writes.
+Use this skill to bring a PR to the best observed merge-ready state: address actionable reviewer feedback, fix failed GitHub Actions checks, update an out-of-date branch, resolve safe merge conflicts, push a scoped branch update, and monitor the resulting PR state. Use `gh` commands for all GitHub reads and writes. Whenever a review comment is processed, reply on GitHub with `gh` before the final response; do not substitute a browser, connector, or local summary for that reply.
 
 Treat a request to use this skill as permission to push commits, post PR comments, and merge the current PR base into the PR head when necessary to resolve base drift or a safe conflict. Do not merge the PR itself, enable auto-merge, add it to a merge queue, force-push, close/reopen it, dismiss reviews, mark threads resolved through non-comment APIs, change its base branch, modify protected settings, or make product/security trade-offs without explicit user approval.
 
@@ -21,7 +21,7 @@ In command examples, `gh api` can resolve `{owner}` and `{repo}` automatically f
 4. Apply minimal code changes and resolve safe base drift or conflicts, preserving unrelated local work.
 5. Run local validation that matches the changed area and failed CI.
 6. Commit coherent changes and push once.
-7. Reply to review comments and leave a concise status update.
+7. Use `gh` to reply to every processed review comment and leave a concise status update.
 8. Monitor within a bounded window, repeating the workflow when new reviews, CI failures, base updates, or conflicts appear.
 9. Summarize the final observed merge readiness, remaining blockers, and any decisions deferred to the user.
 
@@ -264,7 +264,9 @@ gh pr checks {pr} --required --json bucket,name,state,workflow,link,completedAt
 
 ## 8. Reply on GitHub
 
-Reply to every processed inline review comment. Use the thread reply endpoint and reply to the latest relevant comment in the thread.
+Treat the GitHub reply as part of completing each processed review comment. For every fixed, answered, outdated, or deferred comment, send the corresponding reply with a `gh` command before the final response. A Codex final response, local note, browser action, or connector action does not count as the reply. If `gh` cannot post it, record the failure and comment URL for the final summary.
+
+For an inline review comment, use `gh api` with the thread reply endpoint and reply to the latest relevant comment in the thread.
 
 ```bash
 gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id}/replies -F body=@- <<'REPLY_BODY'
@@ -276,7 +278,7 @@ Briefly explain what changed and why.
 REPLY_BODY
 ```
 
-For top-level PR comments or CI summaries, post an issue comment:
+For a top-level PR review comment, review summary, or CI summary, use `gh api` to post an issue comment. Reference the source comment or review when needed to make the response unambiguous:
 
 ```bash
 gh api repos/{owner}/{repo}/issues/{pr}/comments -F body=@- <<'COMMENT_BODY'
