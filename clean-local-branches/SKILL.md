@@ -1,9 +1,9 @@
 ---
-name: git-prune-local-branches
+name: clean-local-branches
 description: Safely find and remove unused local Git branches with no open GitHub pull request, using `gh`. Use when asked to clean up, delete, prune, or audit local branches while preserving branches with open PRs, the repository default branch, and branches checked out in any worktree.
 ---
 
-# Git Prune Local Branches
+# Clean Local Branches
 
 Use this skill from the target Git repository. Require `git`, authenticated `gh`, and access to the repository's GitHub pull requests.
 
@@ -15,15 +15,15 @@ Use this skill from the target Git repository. Require `git`, authenticated `gh`
 4. Report deleted branches and branches retained because Git refuses to delete an unmerged branch.
 
 ```bash
-bash /path/to/git-prune-local-branches/scripts/prune_local_branches.sh
-bash /path/to/git-prune-local-branches/scripts/prune_local_branches.sh --apply
+bash /path/to/clean-local-branches/scripts/prune_local_branches.sh
+bash /path/to/clean-local-branches/scripts/prune_local_branches.sh --apply
 ```
 
 Pass branch names to limit the scope, or `--repo OWNER/REPO` when the pull-request repository cannot be inferred from the current directory:
 
 ```bash
-bash /path/to/git-prune-local-branches/scripts/prune_local_branches.sh feature/old-experiment
-bash /path/to/git-prune-local-branches/scripts/prune_local_branches.sh --repo acme/widgets --apply feature/old-experiment
+bash /path/to/clean-local-branches/scripts/prune_local_branches.sh feature/old-experiment
+bash /path/to/clean-local-branches/scripts/prune_local_branches.sh --repo acme/widgets --apply feature/old-experiment
 ```
 
 ## Safety Rules

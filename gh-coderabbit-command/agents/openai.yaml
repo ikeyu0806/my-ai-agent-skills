@@ -1,4 +1,0 @@
-interface:
-  display_name: "GH CodeRabbit Command"
-  short_description: "Send CodeRabbit PR commands with gh"
-  default_prompt: "Use $gh-coderabbit-command to send a CodeRabbit command to the current branch's PR with gh."

@@ -1,9 +1,9 @@
 ---
-name: gh-coderabbit-command
-description: 'Use when asked to send, post, trigger, or manage CodeRabbit commands on the current GitHub pull request with the gh CLI. Trigger for requests such as "ask CodeRabbit to review this PR", "run CodeRabbit full review", "pause/resume CodeRabbit", "autofix with CodeRabbit", "resolve CodeRabbit comments", "show CodeRabbit config", or Japanese requests like "現在のブランチのPRにghでCodeRabbitへ指示して", "coderabbitにレビュー依頼して", "CodeRabbitコマンドをPRに投げて".'
+name: manage-coderabbit
+description: 'Use when asked to send, post, trigger, or manage CodeRabbit commands on the current GitHub pull request. Trigger for requests such as "ask CodeRabbit to review this PR", "run CodeRabbit full review", "pause/resume CodeRabbit", "autofix with CodeRabbit", "resolve CodeRabbit comments", "show CodeRabbit config", or Japanese requests like "現在のブランチのPRにCodeRabbitへ指示して", "coderabbitにレビュー依頼して", "CodeRabbitコマンドをPRに投げて".'
 ---
 
-# GH CodeRabbit Command
+# Manage CodeRabbit
 
 ## Overview
 
@@ -12,8 +12,8 @@ Use this skill to operate CodeRabbit by posting the right `@coderabbitai` comman
 Prefer the bundled helper script for deterministic placement and safety checks:
 
 ```bash
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "review" --dry-run
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "review"
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "review" --dry-run
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "review"
 ```
 
 Read `references/coderabbit-commands.md` when choosing a command, handling a command not listed here, or deciding whether the command belongs in a PR comment or the PR body.
@@ -42,7 +42,7 @@ Stop and report the blocker if `gh` is not authenticated, no PR exists for the c
 If the user supplied a PR number or URL, pass it to the helper with `--pr`.
 
 ```bash
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --pr 123 --command "full review" --dry-run
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --pr 123 --command "full review" --dry-run
 ```
 
 ## 2. Choose Command
@@ -98,29 +98,29 @@ When the user already gave an unambiguous instruction such as "run CodeRabbit au
 Dry-run first when the command changes PR body, has broad side effects, or the wording/location is ambiguous.
 
 ```bash
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "full review" --dry-run
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "full review" --yes
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "full review" --dry-run
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "full review" --yes
 ```
 
 Use the helper's automatic location for normal commands:
 
 ```bash
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "pause"
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "resume"
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "configuration"
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "pause"
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "resume"
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "configuration"
 ```
 
 For PR body insertion:
 
 ```bash
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "ignore" --yes
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "summary-placeholder"
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "ignore" --yes
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "summary-placeholder"
 ```
 
 If CodeRabbit documentation has changed and a command is not in the helper allowlist, verify the official docs and then use:
 
 ```bash
-bash gh-coderabbit-command/scripts/coderabbit_pr_command.sh --command "new command" --allow-unknown --dry-run
+bash manage-coderabbit/scripts/coderabbit_pr_command.sh --command "new command" --allow-unknown --dry-run
 ```
 
 ## 5. Manual Fallback

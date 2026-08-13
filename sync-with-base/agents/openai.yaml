@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sync with Base"
+  short_description: "Sync a branch with its base and resolve conflicts"
+  default_prompt: "Use $sync-with-base to update the current branch from its latest base branch and resolve conflicts safely."

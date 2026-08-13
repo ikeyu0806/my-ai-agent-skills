@@ -1,9 +1,9 @@
 ---
-name: git-sync-base
+name: sync-with-base
 description: 'Use when asked to update the current Git feature branch from the latest main, master, develop, PR base, or another base branch and resolve merge or rebase conflicts. Trigger for "sync with main", "bring in latest main", "update from base", "rebase onto main", "merge main", conflict resolution after fetching the base branch, or requests to refresh a PR branch without losing either side''s intended changes.'
 ---
 
-# Git Sync Base
+# Sync with Base
 
 Update the current feature branch from its latest base branch, resolve conflicts semantically, validate the result, and preserve a recoverable Git history.
 

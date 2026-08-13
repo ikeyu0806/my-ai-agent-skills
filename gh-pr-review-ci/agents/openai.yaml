@@ -1,7 +1,0 @@
-interface:
-  display_name: "GH PR Merge Readiness"
-  short_description: "Resolve PR blockers and verify merge readiness"
-  default_prompt: "Use $gh-pr-review-ci to resolve PR reviews, CI, and conflicts, then monitor merge readiness."
-
-policy:
-  allow_implicit_invocation: true

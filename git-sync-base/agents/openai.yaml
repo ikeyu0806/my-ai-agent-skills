@@ -1,4 +1,0 @@
-interface:
-  display_name: "Git Sync Base"
-  short_description: "Sync a branch with its base and resolve conflicts"
-  default_prompt: "Use $git-sync-base to update the current branch from its latest base branch and resolve conflicts safely."

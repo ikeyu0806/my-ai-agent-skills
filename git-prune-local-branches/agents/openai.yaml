@@ -1,4 +1,0 @@
-interface:
-  display_name: "ローカルブランチ整理"
-  short_description: "GitHubのopen PRを確認して未使用ローカルGitブランチを安全に整理"
-  default_prompt: "$git-prune-local-branches を使って、open PRがないローカルブランチを確認して安全に削除して。"

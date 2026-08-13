@@ -1,6 +1,6 @@
 ---
-name: gh-create-review-pr
-description: Use when the user wants to open a non-draft, ready-for-review GitHub pull request from the current working branch, including requests such as "create a review-ready PR", "open PR", "ready for review", "non-draft PR", "PRを作成して", "レビュー可能なプルリクを作って", or "/gh-create-review-pr". Inspects the branch diff, writes an accurate title and description, validates the branch, pushes it, and creates an OPEN PR with gh. Do not use for draft PRs or for responding to feedback on an existing PR.
+name: create-review-pr
+description: Use when the user wants to open a non-draft, ready-for-review GitHub pull request from the current working branch, including requests such as "create a review-ready PR", "open PR", "ready for review", "non-draft PR", "PRを作成して", "レビュー可能なプルリクを作って", or "/create-review-pr". Inspects the branch diff, writes an accurate title and description, validates the branch, pushes it, and creates an open PR. Do not use for draft PRs or for responding to feedback on an existing PR.
 ---
 
 # Create Review-Ready PR
@@ -12,10 +12,10 @@ Create one polished, non-draft PR from the current branch. Treat the PR title an
 Accept an optional base branch, title, and language hint. Use a supplied title verbatim; otherwise generate a concise, imperative title in the user's language. Use the language of the request by default.
 
 ```text
-/gh-create-review-pr
-/gh-create-review-pr --base develop
-/gh-create-review-pr --title "fix: prevent duplicate webhook delivery"
-/gh-create-review-pr --lang ja
+/create-review-pr
+/create-review-pr --base develop
+/create-review-pr --title "fix: prevent duplicate webhook delivery"
+/create-review-pr --lang ja
 ```
 
 Use the repository default branch as the base when none is supplied. Tell the user which base was selected. Do not create a PR when the requested target is known to be different; ask for `--base` instead.

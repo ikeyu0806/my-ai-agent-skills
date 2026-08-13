@@ -130,15 +130,15 @@ $local-web-service-debug を使って、Docker Compose のログ、ブラウザ�
 ```
 
 ```text
-$gh-pr-review-ci を使って、現在のブランチのPRレビューコメントとGitHub Actionsの失敗を確認し、必要な修正をpushしてPRに返信して。
+$prepare-pr-for-merge を使って、現在のブランチのPRレビューコメントとGitHub Actionsの失敗を確認し、必要な修正をpushしてPRに返信して。
 ```
 
 ```text
-$gh-coderabbit-command を使って、現在のブランチのPRに CodeRabbit の full review を gh で依頼して。
+$manage-coderabbit を使って、現在のブランチのPRに CodeRabbit の full review を依頼して。
 ```
 
 ```text
-$gh-ci-fix を使って、現在のPRのGitHub Actions失敗ログを gh で確認し、原因を修正してローカル検証後に結果を報告して。
+$fix-ci を使って、現在のPRのGitHub Actions失敗ログを確認し、原因を修正してローカル検証後に結果を報告して。
 ```
 
 ```text
@@ -154,21 +154,21 @@ $google-ads-api-dev を使って、このNestJSプロジェクトの GoogleAdsSe
 ```
 
 ```text
-$git-sync-base を使って、現在のfeature branchに最新のorigin/mainを取り込み、conflictを解消してローカル検証して。
+$sync-with-base を使って、現在のfeature branchに最新のorigin/mainを取り込み、conflictを解消してローカル検証して。
 ```
 
 ```text
-$git-prune-local-branches を使って、open PRがないローカルブランチを確認して安全に整理して。
+$clean-local-branches を使って、open PRがないローカルブランチを確認して安全に整理して。
 ```
 
 Claude Codeでは、同じSkillをslash commandとして直接呼び出せます。
 
 ```text
-/git-sync-base main
+/sync-with-base main
 ```
 
 ```text
-/gh-create-review-pr --base main
+/create-review-pr --base main
 ```
 
 You can also ask naturally when the skill description matches the task:
@@ -196,11 +196,11 @@ Google Adsのテストアカウントにキャンペーンを作って、GAQLで
 - `docker-cleanup`: Inspect Docker disk usage and safely plan or run cleanup for unused containers, images, volumes, networks, system prune, builder/buildx cache, and Docker Compose resources.
 - `gcp-hosting-debug`: Debug GCP-hosted web services with read-only Cloud Run, HTTP(S) Load Balancer, Cloud Logging, Cloud SQL PostgreSQL, OAuth/OIDC/Auth0, TLS, and custom domain diagnostics.
 - `local-web-service-debug`: Debug local Docker Compose web services with read-only Compose logs, browser/Playwright console and network signals, HTTP probes, and bounded PostgreSQL/MySQL diagnostics.
-- `gh-pr-review-ci`: Handle GitHub PR review feedback and failing GitHub Actions checks with `gh`: inspect comments and CI logs, fix actionable issues, validate locally, push, and reply on the PR.
-- `gh-coderabbit-command`: Send CodeRabbit commands to the current GitHub PR with `gh`, choosing PR comments or PR body placement safely for review, full review, pause/resume, autofix, resolve, configuration, ignore, and summary placeholders.
-- `gh-ci-fix`: Diagnose and fix failing GitHub Actions checks with `gh`: inspect PR checks and run logs, identify the root cause, apply scoped code or workflow fixes, validate locally, push when requested, and report updated CI status.
-- `gh-create-review-pr`: Create a non-draft GitHub PR from the current branch with an accurate title and description, local validation, and a final ready-for-review state check.
-- `git-sync-base`: Update the current feature branch from the latest explicit, PR, or remote-default base branch; choose merge or rebase from repository policy, resolve conflicts semantically, validate the integrated result, and push only when requested.
-- `git-prune-local-branches`: Safely identify local branches with no open GitHub pull request, then delete confirmed candidates without force-deleting unmerged branches or touching the default branch and active worktrees.
+- `prepare-pr-for-merge`: Handle GitHub PR review feedback and failing CI: inspect comments and CI logs, fix actionable issues, validate locally, push, reply on the PR, and verify merge readiness.
+- `manage-coderabbit`: Send CodeRabbit commands to the current GitHub PR, choosing PR comments or PR body placement safely for review, full review, pause/resume, autofix, resolve, configuration, ignore, and summary placeholders.
+- `fix-ci`: Diagnose and fix failing CI: inspect PR checks and run logs, identify the root cause, apply scoped code or workflow fixes, validate locally, push when requested, and report updated status.
+- `create-review-pr`: Create a non-draft GitHub PR from the current branch with an accurate title and description, local validation, and a final ready-for-review state check.
+- `sync-with-base`: Update the current feature branch from the latest explicit, PR, or remote-default base branch; choose merge or rebase from repository policy, resolve conflicts semantically, validate the integrated result, and push only when requested.
+- `clean-local-branches`: Safely identify local branches with no open GitHub pull request, then delete confirmed candidates without force-deleting unmerged branches or touching the default branch and active worktrees.
 - `dev-update-radar`: Collect current official update information for Google Ads API, Meta APIs, Stripe API, Auth0, Codex, Claude Code, Ghostty, Chrome, macOS, and npm projects, then classify breaking changes, deprecations, security fixes, migration deadlines, and package.json impact.
 - `google-ads-api-dev`: Develop and exercise Google Ads API features against a TEST account during local development — OAuth2 token minting, GAQL search, and create/update mutate via REST, or through the target project's own runtime (NestJS/TypeScript, Python, etc.) when it already integrates the API. Enforces a `customer.test_account` guardrail before any mutate.

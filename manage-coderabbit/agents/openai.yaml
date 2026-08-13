@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage CodeRabbit"
+  short_description: "Send and manage CodeRabbit PR commands"
+  default_prompt: "Use $manage-coderabbit to send a CodeRabbit command to the current branch's PR."

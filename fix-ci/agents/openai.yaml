@@ -1,0 +1,7 @@
+interface:
+  display_name: "Fix CI"
+  short_description: "Diagnose and fix failed GitHub CI"
+  default_prompt: "Use $fix-ci to inspect failing CI checks, fix the root cause, validate locally, and report the updated status."
+
+policy:
+  allow_implicit_invocation: true

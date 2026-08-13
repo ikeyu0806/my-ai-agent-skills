@@ -1,9 +1,9 @@
 ---
-name: gh-ci-fix
+name: fix-ci
 description: 'Use when asked to detect, diagnose, or fix failing GitHub CI or GitHub Actions checks with the gh CLI. Trigger for red CI, failed PR checks, GitHub Actions failures, broken workflows, "fix CI", "why did CI fail", or requests to inspect gh logs, identify the failing command/test/job, make local code fixes, validate, commit, push, and report status.'
 ---
 
-# GH CI Fix
+# Fix CI
 
 ## Purpose
 

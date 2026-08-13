@@ -1,9 +1,9 @@
 ---
-name: gh-pr-review-ci
-description: 'Use when asked to restore or monitor GitHub pull request merge readiness with the gh CLI: find the current PR, inspect unresolved review feedback, failing CI, merge conflicts, an out-of-date head branch, and merge state; apply scoped fixes, resolve safe conflicts by merging the current base into the PR branch, validate, push, reply, and monitor until the PR is merge-ready or a bounded wait expires. Trigger for PR review comments, requested changes, unresolved review threads, failing GitHub CI, red PR checks, GitHub Actions failures, merge conflicts, "make this PR mergeable", "resolve PR conflicts", "check merge readiness", or requests to fix and monitor a PR.'
+name: prepare-pr-for-merge
+description: 'Use when asked to restore or monitor GitHub pull request merge readiness: find the current PR, inspect unresolved review feedback, failing CI, merge conflicts, an out-of-date head branch, and merge state; apply scoped fixes, resolve safe conflicts by merging the current base into the PR branch, validate, push, reply, and monitor until the PR is merge-ready or a bounded wait expires. Trigger for PR review comments, requested changes, unresolved review threads, merge conflicts, "make this PR mergeable", "resolve PR conflicts", "check merge readiness", or requests to fix and monitor a PR. For a CI-only failure without a broader PR readiness request, use fix-ci.'
 ---
 
-# GH PR Review CI
+# Prepare PR for Merge
 
 ## Overview
 

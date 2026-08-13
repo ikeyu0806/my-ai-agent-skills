@@ -1,0 +1,7 @@
+interface:
+  display_name: "Prepare PR for Merge"
+  short_description: "Resolve PR blockers and verify merge readiness"
+  default_prompt: "Use $prepare-pr-for-merge to resolve PR reviews, CI, and conflicts, then monitor merge readiness."
+
+policy:
+  allow_implicit_invocation: true

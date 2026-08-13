@@ -1,4 +1,4 @@
 interface:
   display_name: "Create Review-Ready PR"
   short_description: "Open a polished, ready-for-review GitHub pull request"
-  default_prompt: "Use $gh-create-review-pr to open a ready-for-review PR from my current branch."
+  default_prompt: "Use $create-review-pr to open a ready-for-review PR from my current branch."
