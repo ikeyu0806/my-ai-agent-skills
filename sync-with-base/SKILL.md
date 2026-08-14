@@ -23,7 +23,7 @@ If the host leaves the placeholder unexpanded or no value was supplied, resolve 
 - Preserve unrelated user changes. Never discard, overwrite, or auto-stash them.
 - Never use `git reset --hard`, `git checkout -- <path>`, `git clean`, or plain `git push --force`.
 - Do not resolve conflicts by blindly choosing `ours` or `theirs`; their meanings differ between merge and rebase.
-- Do not push unless the user explicitly asks to update the remote branch or PR.
+- After successful validation, automatically push only a fast-forward update to the current branch's configured upstream. Do not create a new remote branch or push to an inferred destination.
 - Require explicit approval before rewriting a published branch with `git push --force-with-lease`.
 - Stop for user direction when a conflict requires a product, data, security, or architectural decision that repository evidence cannot resolve.
 
@@ -144,15 +144,21 @@ git merge-base --is-ancestor <remote>/<base> HEAD
 
 Inspect the final diff and recent history, including `git diff --stat <remote>/<base>...HEAD` and the full diff when practical. Discover and run the repository's relevant formatter, lint, typecheck, build, and tests, starting with checks closest to the conflicted files and expanding according to risk. Do not claim a clean integration when required checks fail or could not run.
 
-### 6. Push Only When Requested
+### 6. Automatically Push Safe Updates
 
-For a merge or an unpublished rebased branch, use a normal push only when requested:
+After validation, resolve the current branch's configured upstream. Automatically push only when all of the following are true:
+
+- The current branch has an upstream that is exactly the selected remote and current branch (for example, `origin/feature/my-work`).
+- The local branch contains the upstream tip, so the update is fast-forwardable.
+- The integration did not rewrite an already-published branch.
+
+Use a normal push for that safe case:
 
 ```bash
 git push <remote> <current-branch>
 ```
 
-If a rebase rewrote a published branch, explain why a non-fast-forward update is required and obtain explicit approval before using:
+If the branch lacks a matching upstream, the push would be non-fast-forward, or a rebase rewrote a published branch, do not push. Explain the reason and request explicit approval before using:
 
 ```bash
 git push --force-with-lease <remote> <current-branch>
@@ -167,5 +173,5 @@ Report:
 - The current branch, resolved base ref, fetched commit, and chosen merge/rebase strategy.
 - Conflicted paths and the intent preserved in each important resolution.
 - Validation commands and their observed results.
-- Whether the result remains local or was pushed, including the new commit SHA when pushed.
+- Whether the safe push succeeded, was rejected, or was withheld, including the new commit SHA when pushed.
 - Any unresolved decision, skipped check, or follow-up required from the user.
